@@ -255,10 +255,26 @@ void update_bridge(
     bridge.ros2_type_name = ros2_type_name;
 
     try {
-      bridge.bridge_handles = ros1_bridge::create_bridge_from_2_to_1(
-        ros2_node, ros1_node,
-        bridge.ros2_type_name, topic_name, 10,
-        bridge.ros1_type_name, topic_name, 10);
+      if (topic_name == "/map") // hack to ensure /map topic being latched on the ROS1 side
+      {
+        auto subscriber_qos = rclcpp::SensorDataQoS(rclcpp::KeepLast(10));
+        subscriber_qos.transient_local();
+        subscriber_qos.reliable();
+        bridge.bridge_handles = ros1_bridge::create_bridge_from_2_to_1(
+            ros2_node, ros1_node,
+            bridge.ros2_type_name, topic_name, subscriber_qos,
+            bridge.ros1_type_name, topic_name, 10);
+        printf(
+            "[lvass] created 2to1 bridge for topic '%s' with ROS 2 type '%s' and ROS 1 type '%s'\n with transient_local+reliable->latching",
+            topic_name.c_str(), bridge.ros2_type_name.c_str(), bridge.ros1_type_name.c_str());
+      }
+      else
+      {
+        bridge.bridge_handles = ros1_bridge::create_bridge_from_2_to_1(
+            ros2_node, ros1_node,
+            bridge.ros2_type_name, topic_name, 10,
+            bridge.ros1_type_name, topic_name, 10);
+      }
     } catch (std::runtime_error & e) {
       fprintf(
         stderr,

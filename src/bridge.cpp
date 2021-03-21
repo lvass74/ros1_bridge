@@ -103,9 +103,16 @@ create_bridge_from_2_to_1(
   size_t publisher_queue_size,
   rclcpp::PublisherBase::SharedPtr ros2_pub)
 {
+  bool latch = false;
+  if(subscriber_qos.get_rmw_qos_profile().durability == RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL) {
+    latch = true;
+    RCLCPP_INFO(
+      ros2_node->get_logger(), "create 2 to 1 bridge for topic %s with latching",
+      ros2_topic_name.c_str());
+  }
   auto factory = get_factory(ros1_type_name, ros2_type_name);
   auto ros1_pub = factory->create_ros1_publisher(
-    ros1_node, ros1_topic_name, publisher_queue_size);
+    ros1_node, ros1_topic_name, publisher_queue_size, latch);
 
   auto ros2_sub = factory->create_ros2_subscriber(
     ros2_node, ros2_topic_name, subscriber_qos, ros1_pub, ros2_pub);
