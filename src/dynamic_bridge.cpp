@@ -706,7 +706,7 @@ int main(int argc, char * argv[])
           current_ros2_publishers[topic_name] = topic_type;
         }
 
-        if (subscriber_count) {
+        if (subscriber_count >= 0) {
           current_ros2_subscribers[topic_name] = topic_type;
         }
 

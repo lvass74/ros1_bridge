@@ -81,14 +81,16 @@ int main(int argc, char * argv[])
       if (!queue_size) {
         queue_size = 100;
       }
+      bool latch = static_cast<bool>(topics[i]["latch"]);
+
       printf(
         "Trying to create bidirectional bridge for topic '%s' "
-        "with ROS 2 type '%s'\n",
-        topic_name.c_str(), type_name.c_str());
+        "with ROS 2 type '%s' and with latching '%s'\n",
+        topic_name.c_str(), type_name.c_str(), latch?"true":"false");
 
       try {
         ros1_bridge::BridgeHandles handles = ros1_bridge::create_bidirectional_bridge(
-          ros1_node, ros2_node, "", type_name, topic_name, queue_size);
+          ros1_node, ros2_node, "", type_name, topic_name, queue_size, latch);
         all_handles.push_back(handles);
       } catch (std::runtime_error & e) {
         fprintf(

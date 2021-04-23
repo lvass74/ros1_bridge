@@ -136,19 +136,34 @@ create_bidirectional_bridge(
   const std::string & ros1_type_name,
   const std::string & ros2_type_name,
   const std::string & topic_name,
-  size_t queue_size)
+  size_t queue_size,
+  bool latch)
 {
-  RCLCPP_INFO(
-    ros2_node->get_logger(), "create bidirectional bridge for topic %s",
-    topic_name.c_str());
   BridgeHandles handles;
   handles.bridge1to2 = create_bridge_from_1_to_2(
     ros1_node, ros2_node,
     ros1_type_name, topic_name, queue_size, ros2_type_name, topic_name, queue_size);
-  handles.bridge2to1 = create_bridge_from_2_to_1(
-    ros2_node, ros1_node,
-    ros2_type_name, topic_name, queue_size, ros1_type_name, topic_name, queue_size,
-    handles.bridge1to2.ros2_publisher);
+  if(latch) {
+    RCLCPP_INFO(
+      ros2_node->get_logger(), "create bidirectional bridge for topic %s with latching",
+      topic_name.c_str());
+    auto subscriber_qos = rclcpp::SensorDataQoS(rclcpp::KeepLast(10));
+    subscriber_qos.transient_local();
+    subscriber_qos.reliable();
+    handles.bridge2to1 = create_bridge_from_2_to_1(
+      ros2_node, ros1_node,
+      ros2_type_name, topic_name, subscriber_qos, ros1_type_name, topic_name, queue_size,
+      handles.bridge1to2.ros2_publisher);
+  }
+  else {
+    RCLCPP_INFO(
+      ros2_node->get_logger(), "create bidirectional bridge for topic %s without latching",
+      topic_name.c_str());
+    handles.bridge2to1 = create_bridge_from_2_to_1(
+      ros2_node, ros1_node,
+      ros2_type_name, topic_name, queue_size, ros1_type_name, topic_name, queue_size,
+      handles.bridge1to2.ros2_publisher);
+  }
   return handles;
 }
 
