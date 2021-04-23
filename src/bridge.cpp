@@ -109,6 +109,12 @@ create_bridge_from_2_to_1(
     RCLCPP_INFO(
       ros2_node->get_logger(), "create 2 to 1 bridge for topic %s with latching",
       ros2_topic_name.c_str());
+  } 
+  else {
+    RCLCPP_INFO(
+      ros2_node->get_logger(), "create 2 to 1 bridge for topic %s without latching",
+      ros2_topic_name.c_str());
+
   }
   auto factory = get_factory(ros1_type_name, ros2_type_name);
   auto ros1_pub = factory->create_ros1_publisher(

@@ -255,7 +255,7 @@ void update_bridge(
     bridge.ros2_type_name = ros2_type_name;
 
     try {
-      if (topic_name == "/map") // hack to ensure /map topic being latched on the ROS1 side
+      if (topic_name == "/map" || topic_name == "/robot_description") // hack to ensure topic being latched on the ROS1 side
       {
         auto subscriber_qos = rclcpp::SensorDataQoS(rclcpp::KeepLast(10));
         subscriber_qos.transient_local();
@@ -265,7 +265,7 @@ void update_bridge(
             bridge.ros2_type_name, topic_name, subscriber_qos,
             bridge.ros1_type_name, topic_name, 10);
         printf(
-            "[lvass] created 2to1 bridge for topic '%s' with ROS 2 type '%s' and ROS 1 type '%s'\n with transient_local+reliable->latching",
+            "[lvass] created 2to1 bridge for topic '%s' with ROS 2 type '%s' and ROS 1 type '%s' with transient_local+reliable->latching\n",
             topic_name.c_str(), bridge.ros2_type_name.c_str(), bridge.ros1_type_name.c_str());
       }
       else
