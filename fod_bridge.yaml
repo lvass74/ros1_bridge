@@ -65,6 +65,9 @@ topics:
   - topic: /kinect_camera/image_raw/compressed
     type: sensor_msgs/msg/CompressedImage
 
+  - topic: /rear_camera/image_raw/compressed
+    type: sensor_msgs/msg/CompressedImage
+
   - topic: /kinect_camera/image_raw/compressedDepth
     type: sensor_msgs/msg/CompressedImage
 
