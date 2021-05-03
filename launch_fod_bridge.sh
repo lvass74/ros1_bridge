@@ -1,4 +1,5 @@
 #!/bin/bash
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 source /opt/ros/noetic/setup.bash
 source /opt/ros/foxy/setup.bash
 source ./install/setup.bash
